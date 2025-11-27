@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState, FormEvent } from "react";
@@ -60,36 +59,28 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-white p-6">
       <div className="max-w-4xl mx-auto">
-        <header className="mb-8 flex items-center gap-4">
-          <div className="w-12 h-12 bg-gradient-to-tr from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
-            TL
-          </div>
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold leading-tight text-gray-900">
-              Simple Todo
-            </h1>
-            <p className="text-sm text-gray-700">
-              Organize tasks, stay focused. Yaratuvchi: Najot Talim
-            </p>
-          </div>
-        </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Form card */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 mt-2.5 gap-6">
+
           <form
             onSubmit={addTodo}
             className="lg:col-span-1 bg-white rounded-xl p-6 shadow-md sticky top-6"
           >
-            <h2 className="text-lg font-semibold mb-4 text-gray-900">Add New Todo</h2>
+            <h2 className="text-lg font-semibold mb-4 text-gray-900">
+              Add New Todo
+            </h2>
 
             <div className="flex flex-col mb-4">
-              <label htmlFor="title" className="text-sm font-medium mb-2 text-gray-800">
+              <label
+                htmlFor="title"
+                className="text-sm font-medium mb-2 text-gray-800"
+              >
                 Title
               </label>
               <input
                 id="title"
                 type="text"
-                placeholder="Give it a short title"
+                placeholder="Enter todo title..."
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className="outline-none border border-gray-200 p-3 rounded-md focus:ring-2 focus:ring-blue-400 transition bg-white text-gray-900"
@@ -97,12 +88,15 @@ const Home = () => {
             </div>
 
             <div className="flex flex-col mb-5">
-              <label htmlFor="desc" className="text-sm font-medium mb-2 text-gray-800">
+              <label
+                htmlFor="desc"
+                className="text-sm font-medium mb-2 text-gray-800"
+              >
                 Description
               </label>
               <textarea
                 id="desc"
-                placeholder="Describe the task..."
+                placeholder="Enter todo description..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="outline-none border border-gray-200 p-3 rounded-md min-h-[90px] resize-none focus:ring-2 focus:ring-blue-400 transition bg-white text-gray-900"
@@ -127,17 +121,19 @@ const Home = () => {
             </button>
           </form>
 
-          {/* Todo list */}
           <div className="lg:col-span-2">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-bold text-gray-900">Todo List</h2>
               <p className="text-sm text-gray-600">{data.length} items</p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* FULL WIDTH GRID */}
+            <div className="grid grid-cols-1 gap-4">
               {data.length === 0 && (
                 <div className="col-span-full p-6 bg-white rounded-lg text-center shadow border border-gray-100">
-                  <p className="text-gray-700">No todos yet — add your first task!</p>
+                  <p className="text-gray-700">
+                    No todos yet — add your first task!
+                  </p>
                 </div>
               )}
 
@@ -155,11 +151,9 @@ const Home = () => {
               ))}
             </div>
           </div>
+
         </div>
 
-        <footer className="mt-8 text-center text-sm text-gray-600">
-          Tip: click a todo to edit. Your todos are stored locally in the browser.
-        </footer>
       </div>
     </div>
   );

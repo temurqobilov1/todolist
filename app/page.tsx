@@ -1,65 +1,168 @@
-import Image from "next/image";
 
-export default function Home() {
+"use client";
+
+import { useEffect, useState, FormEvent } from "react";
+import TodoCard from "./component/todo-comp";
+
+export interface TodoType {
+  id: string;
+  title: string;
+  description: string;
+  createdAt: number;
+}
+
+const Home = () => {
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [data, setData] = useState<TodoType[]>([]);
+
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem("todo") || "[]");
+    setData(saved);
+  }, []);
+
+  const addTodo = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!title.trim() && !description.trim()) return;
+
+    const newTodo: TodoType = {
+      id: crypto.randomUUID(),
+      title,
+      description,
+      createdAt: Date.now(),
+    };
+
+    const updatedData = [...data, newTodo];
+    setData(updatedData);
+    localStorage.setItem("todo", JSON.stringify(updatedData));
+
+    setTitle("");
+    setDescription("");
+  };
+
+  const deleteTodo = (id: string) => {
+    const updatedData = data.filter((todo) => todo.id !== id);
+    setData(updatedData);
+    localStorage.setItem("todo", JSON.stringify(updatedData));
+  };
+
+  const updateTodo = (id: string, newTitle: string, newDescription: string) => {
+    const updatedData = data.map((todo) =>
+      todo.id === id
+        ? { ...todo, title: newTitle, description: newDescription }
+        : todo
+    );
+    setData(updatedData);
+    localStorage.setItem("todo", JSON.stringify(updatedData));
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="min-h-screen bg-white p-6">
+      <div className="max-w-4xl mx-auto">
+        <header className="mb-8 flex items-center gap-4">
+          <div className="w-12 h-12 bg-gradient-to-tr from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+            TL
+          </div>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold leading-tight text-gray-900">
+              Simple Todo
+            </h1>
+            <p className="text-sm text-gray-700">
+              Organize tasks, stay focused. Yaratuvchi: Najot Talim
+            </p>
+          </div>
+        </header>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Form card */}
+          <form
+            onSubmit={addTodo}
+            className="lg:col-span-1 bg-white rounded-xl p-6 shadow-md sticky top-6"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <h2 className="text-lg font-semibold mb-4 text-gray-900">Add New Todo</h2>
+
+            <div className="flex flex-col mb-4">
+              <label htmlFor="title" className="text-sm font-medium mb-2 text-gray-800">
+                Title
+              </label>
+              <input
+                id="title"
+                type="text"
+                placeholder="Give it a short title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="outline-none border border-gray-200 p-3 rounded-md focus:ring-2 focus:ring-blue-400 transition bg-white text-gray-900"
+              />
+            </div>
+
+            <div className="flex flex-col mb-5">
+              <label htmlFor="desc" className="text-sm font-medium mb-2 text-gray-800">
+                Description
+              </label>
+              <textarea
+                id="desc"
+                placeholder="Describe the task..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="outline-none border border-gray-200 p-3 rounded-md min-h-[90px] resize-none focus:ring-2 focus:ring-blue-400 transition bg-white text-gray-900"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-3 rounded-md shadow hover:scale-[1.01] transform transition"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              Add Todo
+            </button>
+          </form>
+
+          {/* Todo list */}
+          <div className="lg:col-span-2">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-gray-900">Todo List</h2>
+              <p className="text-sm text-gray-600">{data.length} items</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {data.length === 0 && (
+                <div className="col-span-full p-6 bg-white rounded-lg text-center shadow border border-gray-100">
+                  <p className="text-gray-700">No todos yet — add your first task!</p>
+                </div>
+              )}
+
+              {data.map((todo) => (
+                <div
+                  key={todo.id}
+                  className="p-4 bg-white rounded-lg shadow-sm border border-gray-100"
+                >
+                  <TodoCard
+                    {...todo}
+                    deleteTodo={deleteTodo}
+                    updateTodo={updateTodo}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-      </main>
+
+        <footer className="mt-8 text-center text-sm text-gray-600">
+          Tip: click a todo to edit. Your todos are stored locally in the browser.
+        </footer>
+      </div>
     </div>
   );
-}
+};
+
+export default Home;
